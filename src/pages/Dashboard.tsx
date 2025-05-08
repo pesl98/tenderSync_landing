@@ -1,0 +1,175 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+
+type UserProfile = {
+  id: string;
+  user_id: string;
+  email: string;
+  name: string | null;
+  phone: string | null;
+  company_name: string | null;
+  company_description: string | null;
+  created_at: string;
+};
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const createUserProfile = async (userId: string, email: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('t_user_profile')
+        .insert([
+          {
+            user_id: userId,
+            email: email,
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (err) {
+      console.error('Error creating user profile:', err);
+      throw err;
+    }
+  };
+
+  const handleSessionError = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error during sign out:', error);
+    } finally {
+      navigate('/login');
+    }
+  };
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError) {
+          throw userError;
+        }
+
+        if (!user) {
+          await handleSessionError();
+          return;
+        }
+
+        // Try to get existing profile
+        const { data: existingProfile, error: profileError } = await supabase
+          .from('t_user_profile')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError) {
+          if (profileError.code === 'PGRST116') {
+            // Profile doesn't exist, create it
+            const newProfile = await createUserProfile(user.id, user.email || '');
+            setProfile(newProfile);
+          } else {
+            throw profileError;
+          }
+        } else {
+          setProfile(existingProfile);
+        }
+      } catch (err) {
+        console.error('Session error:', err);
+        await handleSessionError();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_OUT' || !session?.user) {
+        navigate('/login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">User Profile</h2>
+            
+            {profile ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Email</label>
+                    <div className="mt-1 text-gray-900">{profile.email}</div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Name</label>
+                    <div className="mt-1 text-gray-900">{profile.name || 'Not provided'}</div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Phone</label>
+                    <div className="mt-1 text-gray-900">{profile.phone || 'Not provided'}</div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600">Company Name</label>
+                    <div className="mt-1 text-gray-900">{profile.company_name || 'Not provided'}</div>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Company Description</label>
+                  <div className="mt-1 text-gray-900">{profile.company_description || 'Not provided'}</div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-600">Member Since</label>
+                  <div className="mt-1 text-gray-900">
+                    {new Date(profile.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-600">No profile information found.</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
