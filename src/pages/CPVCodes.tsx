@@ -1,11 +1,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import Button from '../components/ui/Button';
 
 const CPVCodesPage = () => {
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  useEffect(() => {
+    const getUserEmail = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserEmail(user.email);
+      }
+    };
+    getUserEmail();
+  }, []);
 
   const searchCPVCodes = async (term: string) => {
     if (term.length < 3) return;
@@ -25,6 +37,22 @@ const CPVCodesPage = () => {
       console.error('Error searching CPV codes:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAddCode = async (code: string) => {
+    try {
+      const { error } = await supabase
+        .from('t_user_profile_cpv_codes')
+        .insert([
+          { email: userEmail, code }
+        ]);
+
+      if (error) throw error;
+      alert('CPV code added successfully');
+    } catch (err) {
+      console.error('Error adding CPV code:', err);
+      alert('Failed to add CPV code');
     }
   };
 
@@ -61,6 +89,7 @@ const CPVCodesPage = () => {
             <tr className="bg-gray-100">
               <th className="border p-2 text-left">Code</th>
               <th className="border p-2 text-left">Description</th>
+              <th className="border p-2 text-center w-24">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -68,6 +97,14 @@ const CPVCodesPage = () => {
               <tr key={code.CODE} className="border-b hover:bg-gray-50">
                 <td className="border p-2">{code.CODE}</td>
                 <td className="border p-2">{code.EN}</td>
+                <td className="border p-2 text-center">
+                  <Button
+                    onClick={() => handleAddCode(code.CODE)}
+                    size="sm"
+                  >
+                    Add
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>
