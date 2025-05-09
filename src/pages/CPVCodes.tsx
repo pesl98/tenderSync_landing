@@ -42,10 +42,24 @@ const CPVCodesPage = () => {
 
   const handleAddCode = async (code: string) => {
     try {
+      // First get the user_profile_id
+      const { data: profileData, error: profileError } = await supabase
+        .from('t_user_profiles')
+        .select('id')
+        .eq('email', userEmail)
+        .single();
+
+      if (profileError) throw profileError;
+      if (!profileData) throw new Error('User profile not found');
+
+      // Then insert the CPV code with the user_profile_id
       const { error } = await supabase
         .from('t_user_profile_cpv_codes')
         .insert([
-          { email: userEmail, code }
+          { 
+            user_profile_id: profileData.id,
+            cpv_code: code
+          }
         ]);
 
       if (error) throw error;
