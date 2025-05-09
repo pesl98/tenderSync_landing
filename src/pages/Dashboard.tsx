@@ -172,7 +172,8 @@ const Dashboard = () => {
                     company_name: profile?.company_name || '',
                     company_description: profile?.company_description || '',
                     source_app: profile?.source_app || '',
-                    email: profile?.email || user.email
+                    email: profile?.email || user.email,
+                    country: profile?.country || ''
                   }}
                   onClose={() => setActiveTab('profile')}
                   onSuccess={() => {
