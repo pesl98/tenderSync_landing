@@ -164,7 +164,7 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
       <FormField
         id="name"
         label="Your Name"
-        placeholder="John Doe"
+        placeholder="Your Full Name"
         required
         value={formData.name}
         onChange={handleChange}
@@ -199,7 +199,7 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
         id="telephone"
         label="Telephone (Optional)"
         type="tel"
-        placeholder="+1 (555) 123-4567"
+        placeholder="+31 6 1234 5678"
         value={formData.telephone}
         onChange={handleChange}
       />
