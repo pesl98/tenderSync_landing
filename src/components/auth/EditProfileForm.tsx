@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FormField from '../ui/Form';
 import Button from '../ui/Button';
 import { supabase } from '../../lib/supabase';
@@ -10,6 +10,7 @@ type Profile = {
   company_name: string;
   company_description: string;
   source_app: string;
+  email: string;
 };
 
 type EditProfileFormProps = {
@@ -20,8 +21,47 @@ type EditProfileFormProps = {
 
 const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormProps) => {
   const [formData, setFormData] = useState<Profile>(initialData);
+  const [cpvCodes, setCpvCodes] = useState<string[]>([]);
+  const [availableCpvCodes, setAvailableCpvCodes] = useState<{ code: string; description: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCPVCodes = async () => {
+      // Fetch available CPV codes
+      const { data: cpvCodesData, error: cpvError } = await supabase
+        .from('t_cpv_codes')
+        .select('code, description');
+
+      if (cpvError) {
+        console.error('Error fetching CPV codes:', cpvError);
+      } else {
+        setAvailableCpvCodes(cpvCodesData || []);
+      }
+
+      // Fetch user's existing CPV codes
+      const { data: userCpvCodes, error: userCpvError } = await supabase
+        .from('t_user_profile_cpv_codes')
+        .select('code')
+        .eq('email', initialData.email);
+
+      if (userCpvError) {
+        console.error('Error fetching user CPV codes:', userCpvError);
+      } else {
+        setCpvCodes(userCpvCodes?.map(item => item.code) || []);
+      }
+    };
+
+    fetchCPVCodes();
+  }, [initialData.email]);
+
+  const handleCPVCodeChange = (code: string) => {
+    setCpvCodes(prev => 
+      prev.includes(code) 
+        ? prev.filter(c => c !== code)
+        : [...prev, code]
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +69,7 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
     setError(null);
 
     try {
+      // Update profile
       const { error: updateError } = await supabase
         .from('t_user_profiles')
         .update({
@@ -41,6 +82,27 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
         .eq('email', initialData.email);
 
       if (updateError) throw updateError;
+
+      // Delete existing CPV codes
+      await supabase
+        .from('t_user_profile_cpv_codes')
+        .delete()
+        .eq('email', initialData.email);
+
+      // Insert new CPV codes
+      if (cpvCodes.length > 0) {
+        const cpvInserts = cpvCodes.map(code => ({
+          email: initialData.email,
+          code,
+        }));
+
+        const { error: cpvError } = await supabase
+          .from('t_user_profile_cpv_codes')
+          .insert(cpvInserts);
+
+        if (cpvError) throw cpvError;
+      }
+
       onSuccess();
       onClose();
     } catch (err) {
@@ -87,6 +149,27 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
         value={formData.source_app}
         onChange={(e) => setFormData({ ...formData, source_app: e.target.value })}
       />
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">CPV Codes</label>
+        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-2">
+          {availableCpvCodes.map((cpvCode) => (
+            <div key={cpvCode.code} className="flex items-center">
+              <input
+                type="checkbox"
+                id={`cpv-${cpvCode.code}`}
+                checked={cpvCodes.includes(cpvCode.code)}
+                onChange={() => handleCPVCodeChange(cpvCode.code)}
+                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+              />
+              <label htmlFor={`cpv-${cpvCode.code}`} className="ml-2 text-sm text-gray-700">
+                {cpvCode.code} - {cpvCode.description}
+              </label>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="flex justify-end space-x-3 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>
           Cancel
