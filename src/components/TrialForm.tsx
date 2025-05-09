@@ -9,6 +9,7 @@ type FormData = {
   telephone: string;
   companyName: string;
   companyDescription: string;
+  country: string;
 };
 
 type FormErrors = Partial<Record<keyof FormData, string>>;
@@ -24,6 +25,7 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
     telephone: '',
     companyName: '',
     companyDescription: '',
+    country: 'The Netherlands',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -113,6 +115,7 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
             telephone: formData.telephone,
             company_name: formData.companyName,
             company_description: formData.companyDescription,
+            country: formData.country,
             source_app: 'TenderSync'
           },
         ]);
@@ -193,6 +196,23 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
         onChange={handleChange}
         error={errors.companyDescription}
       />
+      
+      <div className="space-y-1">
+        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+          Country
+        </label>
+        <select
+          id="country"
+          name="country"
+          value={formData.country}
+          onChange={handleChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        >
+          <option value="The Netherlands">The Netherlands</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Germany">Germany</option>
+        </select>
+      </div>
       
       <div className="mt-6">
         <Button 
