@@ -25,9 +25,9 @@ const CPVCodesPage = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('cpv_codes')
+        .from('t_cpv_codes')
         .select('*')
-        .ilike('description', `%${term}%`)
+        .ilike('EN', `%${term}%`)
         .order('code')
         .limit(100);
 
@@ -96,7 +96,7 @@ const CPVCodesPage = () => {
             {codes.map((code) => (
               <tr key={code.code} className="border-b hover:bg-gray-50">
                 <td className="border p-2">{code.code}</td>
-                <td className="border p-2">{code.description}</td>
+                <td className="border p-2">{code.EN}</td>
                 <td className="border p-2 text-center">
                   <Button
                     onClick={() => handleAddCode(code.code)}
