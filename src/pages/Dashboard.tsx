@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
+import EditProfileForm from '../components/auth/EditProfileForm';
 
 // Mock data for the dashboard
 const mockTransactions = [
@@ -164,7 +165,14 @@ const Dashboard = () => {
               </div>
               {activeTab === 'edit' ? (
                 <EditProfileForm
-                  initialData={profile}
+                  initialData={{
+                    name: profile?.name || '',
+                    telephone: profile?.telephone || '',
+                    company_name: profile?.company_name || '',
+                    company_description: profile?.company_description || '',
+                    source_app: profile?.source_app || '',
+                    email: profile?.email || user.email
+                  }}
                   onClose={() => setActiveTab('profile')}
                   onSuccess={() => {
                     // Refresh profile data
@@ -180,6 +188,7 @@ const Dashboard = () => {
                         setError('Failed to load user profile');
                       } else {
                         setProfile(userProfile);
+                        setActiveTab('profile');
                       }
                     };
                     getProfile();
