@@ -20,6 +20,7 @@ const LoginForm = () => {
 
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-center mb-6">Login to TenderSync</h1>
       <Auth
         supabaseClient={supabase}
         appearance={{
