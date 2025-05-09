@@ -213,6 +213,10 @@ const Dashboard = () => {
                     <label className="block text-sm font-medium text-gray-700">Phone</label>
                     <p className="mt-1 text-sm text-gray-900">{profile?.telephone || 'Not set'}</p>
                   </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Country</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.country || 'Not set'}</p>
+                  </div>
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700">Company Description</label>
                     <p className="mt-1 text-sm text-gray-900">{profile?.company_description || 'Not set'}</p>

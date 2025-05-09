@@ -17,6 +17,7 @@ type Profile = {
   company_description: string;
   source_app: string;
   email: string;
+  country: string;
 };
 
 type EditProfileFormProps = {
@@ -131,6 +132,23 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
         value={formData.name}
         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
       />
+      <div className="space-y-1">
+        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+          Country
+        </label>
+        <select
+          id="country"
+          name="country"
+          value={formData.country || ''}
+          onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+        >
+          <option value="">Select a country</option>
+          <option value="The Netherlands">The Netherlands</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Germany">Germany</option>
+        </select>
+      </div>
       <FormField
         id="telephone"
         label="Telephone"
