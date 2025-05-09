@@ -22,10 +22,10 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState<FormData>({
     email: '',
     name: '',
+    country: '',
     telephone: '',
     companyName: '',
     companyDescription: '',
-    country: 'The Netherlands',
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -60,6 +60,10 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
     
     if (!formData.name) {
       newErrors.name = 'Name is required';
+    }
+
+    if (!formData.country) {
+      newErrors.country = 'Country is required';
     }
     
     if (!formData.companyName) {
@@ -166,6 +170,30 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
         onChange={handleChange}
         error={errors.name}
       />
+
+      <div className="space-y-1">
+        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+          Country <span className="text-red-500">*</span>
+        </label>
+        <select
+          id="country"
+          name="country"
+          value={formData.country}
+          onChange={handleChange}
+          required
+          className={`mt-1 block w-full rounded-md ${
+            errors.country ? 'border-red-500' : 'border-gray-300'
+          } shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm`}
+        >
+          <option value="">Select a country</option>
+          <option value="The Netherlands">The Netherlands</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Germany">Germany</option>
+        </select>
+        {errors.country && (
+          <p className="mt-1 text-sm text-red-600">{errors.country}</p>
+        )}
+      </div>
       
       <FormField
         id="telephone"
@@ -196,23 +224,6 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
         onChange={handleChange}
         error={errors.companyDescription}
       />
-      
-      <div className="space-y-1">
-        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-          Country
-        </label>
-        <select
-          id="country"
-          name="country"
-          value={formData.country}
-          onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-        >
-          <option value="The Netherlands">The Netherlands</option>
-          <option value="Belgium">Belgium</option>
-          <option value="Germany">Germany</option>
-        </select>
-      </div>
       
       <div className="mt-6">
         <Button 
