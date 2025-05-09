@@ -86,6 +86,7 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
           company_name: formData.company_name,
           company_description: formData.company_description,
           source_app: formData.source_app,
+          country: formData.country,
         })
         .eq('email', initialData.email);
 
