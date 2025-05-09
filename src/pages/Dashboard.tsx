@@ -156,33 +156,63 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold mb-4">Profile Information</h2>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
-                  <p className="mt-1 text-sm text-gray-900">{profile?.name || 'Not set'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <p className="mt-1 text-sm text-gray-900">{profile?.email}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Company</label>
-                  <p className="mt-1 text-sm text-gray-900">{profile?.company_name || 'Not set'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone</label>
-                  <p className="mt-1 text-sm text-gray-900">{profile?.telephone || 'Not set'}</p>
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Company Description</label>
-                  <p className="mt-1 text-sm text-gray-900">{profile?.company_description || 'Not set'}</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Source App</label>
-                  <p className="mt-1 text-sm text-gray-900">{profile?.source_app || 'TenderSync'}</p>
-                </div>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Profile Information</h2>
+                <Button onClick={() => setActiveTab('edit')} variant="outline" size="sm">
+                  Edit Profile
+                </Button>
               </div>
+              {activeTab === 'edit' ? (
+                <EditProfileForm
+                  initialData={profile}
+                  onClose={() => setActiveTab('profile')}
+                  onSuccess={() => {
+                    // Refresh profile data
+                    const getProfile = async () => {
+                      const { data: userProfile, error: profileError } = await supabase
+                        .from('t_user_profiles')
+                        .select('*')
+                        .eq('email', user.email)
+                        .single();
+
+                      if (profileError) {
+                        console.error('Error fetching profile:', profileError);
+                        setError('Failed to load user profile');
+                      } else {
+                        setProfile(userProfile);
+                      }
+                    };
+                    getProfile();
+                  }}
+                />
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Name</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.name || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Company</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.company_name || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Phone</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.telephone || 'Not set'}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700">Company Description</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.company_description || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Source App</label>
+                    <p className="mt-1 text-sm text-gray-900">{profile?.source_app || 'TenderSync'}</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
