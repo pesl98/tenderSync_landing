@@ -4,6 +4,11 @@ import FormField from '../ui/Form';
 import Button from '../ui/Button';
 import { supabase } from '../../lib/supabase';
 
+type CPVCode = {
+  code: string;
+  description: string;
+};
+
 type Profile = {
   name: string;
   telephone: string;
@@ -152,21 +157,19 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">CPV Codes</label>
-        <div className="max-h-60 overflow-y-auto border rounded-md p-3 space-y-2">
-          {availableCpvCodes.map((cpvCode) => (
-            <div key={cpvCode.code} className="flex items-center">
-              <input
-                type="checkbox"
-                id={`cpv-${cpvCode.code}`}
-                checked={cpvCodes.includes(cpvCode.code)}
-                onChange={() => handleCPVCodeChange(cpvCode.code)}
-                className="h-4 w-4 text-blue-600 rounded border-gray-300"
-              />
-              <label htmlFor={`cpv-${cpvCode.code}`} className="ml-2 text-sm text-gray-700">
+        <div className="space-y-2">
+          <select
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            value={cpvCodes[0] || ''}
+            onChange={(e) => setCpvCodes([e.target.value])}
+          >
+            <option value="">Select a CPV code</option>
+            {availableCpvCodes.map((cpvCode) => (
+              <option key={cpvCode.code} value={cpvCode.code}>
                 {cpvCode.code} - {cpvCode.description}
-              </label>
-            </div>
-          ))}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
