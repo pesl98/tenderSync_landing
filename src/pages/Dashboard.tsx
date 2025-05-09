@@ -23,10 +23,10 @@ const Dashboard = () => {
     const checkUser = async () => {
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
+        console.log('Auth check:', { user: !!user, error: userError });
 
-        if (userError || !user) {
-          throw new Error('Not authenticated');
-        }
+        if (userError) throw userError;
+        if (!user) throw new Error('Not authenticated');
 
         // Get user profile from t_user_profile table
         const { data: userProfile, error: profileError } = await supabase
@@ -34,16 +34,32 @@ const Dashboard = () => {
           .select('*')
           .eq('user_id', user.id)
           .single();
+        
+        console.log('Profile check:', { profile: !!userProfile, error: profileError });
 
         if (profileError) {
-          throw profileError;
+          if (profileError.code === 'PGRST116') {
+            // Profile doesn't exist yet, create one
+            const { data: newProfile, error: createError } = await supabase
+              .from('t_user_profile')
+              .insert([{ user_id: user.id, email: user.email }])
+              .select()
+              .single();
+            
+            if (createError) throw createError;
+            setProfile(newProfile);
+          } else {
+            throw profileError;
+          }
+        } else {
+          setProfile(userProfile);
         }
-
-        setProfile(userProfile);
       } catch (err) {
-        console.error('Session error:', err);
+        console.error('Dashboard error:', err);
         setError(err instanceof Error ? err.message : 'An error occurred');
-        navigate('/login');
+        if (err.message === 'Not authenticated') {
+          navigate('/login');
+        }
       } finally {
         setLoading(false);
       }
