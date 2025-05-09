@@ -1,9 +1,23 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/dashboard');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
       <Auth
@@ -23,11 +37,10 @@ const LoginForm = () => {
         view="sign_in"
         showLinks={false}
         magicLink={false}
-        redirectTo={`${window.location.origin}/dashboard`}
         onlyThirdPartyProviders={false}
       />
     </div>
   );
 };
 
-export default LoginForm
+export default LoginForm;
