@@ -26,9 +26,9 @@ const CPVCodesPage = () => {
     try {
       const { data, error } = await supabase
         .from('t_cpv_codes')
-        .select('*')
+        .select('CODE, EN')
         .ilike('EN', `%${term}%`)
-        .order('code')
+        .order('CODE')
         .limit(100);
 
       if (error) throw error;
@@ -94,12 +94,12 @@ const CPVCodesPage = () => {
           </thead>
           <tbody>
             {codes.map((code) => (
-              <tr key={code.code} className="border-b hover:bg-gray-50">
-                <td className="border p-2">{code.code}</td>
+              <tr key={code.CODE} className="border-b hover:bg-gray-50">
+                <td className="border p-2">{code.CODE}</td>
                 <td className="border p-2">{code.EN}</td>
                 <td className="border p-2 text-center">
                   <Button
-                    onClick={() => handleAddCode(code.code)}
+                    onClick={() => handleAddCode(code.CODE)}
                     size="sm"
                   >
                     Add
