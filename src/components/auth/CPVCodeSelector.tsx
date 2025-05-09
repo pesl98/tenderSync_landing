@@ -13,44 +13,16 @@ type CPVCodeSelectorProps = {
   currentCodes: string[];
 };
 
+import { useNavigate } from 'react-router-dom';
+
 const CPVCodeSelector = ({ onClose, onSelect, currentCodes }: CPVCodeSelectorProps) => {
-  const [codes, setCodes] = useState<CPVCode[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCPVCodes = async () => {
-      console.log('Fetching CPV codes...');
-      try {
-        const { data, error } = await supabase
-          .from('t_cpv_codes')
-          .select('*');
+    navigate('/cpv');
+  }, [navigate]);
 
-        console.log('Raw response:', { data, error });
-
-        if (error) {
-          console.error('Error fetching CPV codes:', error);
-        } else {
-          console.log('Fetched data:', data);
-          setCodes(data || []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch CPV codes:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCPVCodes();
-  }, []);
-
-  const filteredCodes = codes.filter(code => 
-    code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    code.EN.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+  return null;
       <div className="bg-white rounded-lg w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
         <div className="p-4 border-b">
           <h2 className="text-xl font-semibold">Select CPV Codes</h2>
