@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import FormField from '../ui/Form';
 import Button from '../ui/Button';
 import { supabase } from '../../lib/supabase';
+import CPVCodeSelector from './CPVCodeSelector';
 
 type CPVCode = {
   code: string;
@@ -30,6 +31,7 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
   const [availableCpvCodes, setAvailableCpvCodes] = useState<{ code: string; description: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCPVSelector, setShowCPVSelector] = useState(false);
 
   useEffect(() => {
     const fetchCPVCodes = async () => {
@@ -158,19 +160,37 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">CPV Codes</label>
         <div className="space-y-2">
-          <select
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            value={cpvCodes[0] || ''}
-            onChange={(e) => setCpvCodes([e.target.value])}
-          >
-            <option value="">Select a CPV code</option>
-            {availableCpvCodes.map((cpvCode) => (
-              <option key={cpvCode.code} value={cpvCode.code}>
-                {cpvCode.code} - {cpvCode.description}
-              </option>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {cpvCodes.map((code) => (
+              <div key={code} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center">
+                {code}
+                <button
+                  onClick={() => setCpvCodes(prev => prev.filter(c => c !== code))}
+                  className="ml-2 text-blue-600 hover:text-blue-800"
+                >
+                  ×
+                </button>
+              </div>
             ))}
-          </select>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowCPVSelector(true)}
+          >
+            Select CPV Codes
+          </Button>
         </div>
+        {showCPVSelector && (
+          <CPVCodeSelector
+            onClose={() => setShowCPVSelector(false)}
+            onSelect={(code) => {
+              setCpvCodes(prev => [...prev, code]);
+              setShowCPVSelector(false);
+            }}
+            currentCodes={cpvCodes}
+          />
+        )}
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
