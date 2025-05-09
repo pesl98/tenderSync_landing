@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import Button from '../ui/Button';
@@ -26,7 +25,7 @@ const CPVCodeSelector = ({ onClose, onSelect, currentCodes }: CPVCodeSelectorPro
         const { data, error } = await supabase
           .from('t_cpv_codes')
           .select('*');
-        
+
         console.log('Raw response:', { data, error });
 
         if (error) {
@@ -63,7 +62,7 @@ const CPVCodeSelector = ({ onClose, onSelect, currentCodes }: CPVCodeSelectorPro
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        
+
         <div className="flex-1 overflow-auto p-4">
           {loading ? (
             <div className="text-center">Loading...</div>
@@ -97,7 +96,7 @@ const CPVCodeSelector = ({ onClose, onSelect, currentCodes }: CPVCodeSelectorPro
             </table>
           )}
         </div>
-        
+
         <div className="p-4 border-t">
           <Button onClick={onClose} variant="outline">
             Close
