@@ -25,7 +25,7 @@ const CPVCodesPage = () => {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from('cpv_codes')
+        .from('t_cpv_codes')
         .select('*')
         .ilike('EN', `%${term}%`)
         .order('code')
