@@ -21,16 +21,25 @@ const CPVCodeSelector = ({ onClose, onSelect, currentCodes }: CPVCodeSelectorPro
 
   useEffect(() => {
     const fetchCPVCodes = async () => {
-      const { data, error } = await supabase
-        .from('t_cpv_codes')
-        .select('code, EN');
+      try {
+        const { data, error } = await supabase
+          .from('t_cpv_codes')
+          .select('code, EN')
+          .order('code');
 
-      if (error) {
-        console.error('Error fetching CPV codes:', error);
-      } else {
-        setCodes(data || []);
+        if (error) {
+          console.error('Error fetching CPV codes:', error);
+        } else {
+          setCodes(data.map(code => ({
+            code: code.code,
+            EN: code.EN
+          })) || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch CPV codes:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchCPVCodes();
