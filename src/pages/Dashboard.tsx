@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import EditProfileForm from '../components/auth/EditProfileForm';
+import CPVCodesList from '../components/profile/CPVCodesList';
 
 // Mock data for the dashboard
 const mockTransactions = [
@@ -219,6 +220,10 @@ const Dashboard = () => {
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Source App</label>
                     <p className="mt-1 text-sm text-gray-900">{profile?.source_app || 'TenderSync'}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700">CPV Codes</label>
+                    <CPVCodesList profileId={profile?.id} />
                   </div>
                 </div>
               )}
