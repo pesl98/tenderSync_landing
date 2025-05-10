@@ -180,7 +180,6 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">CPV Codes</label>
         <div className="space-y-2">
           <div className="flex flex-wrap gap-2 mb-2">
             {cpvCodes.map((code) => (
