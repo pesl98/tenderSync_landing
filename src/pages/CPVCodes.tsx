@@ -82,7 +82,15 @@ const CPVCodesPage = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">CPV Codes</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">CPV Codes</h1>
+        <Button 
+          variant="outline" 
+          onClick={() => navigate('/dashboard')}
+        >
+          Return to Dashboard
+        </Button>
+      </div>
       <div className="mb-4">
         <input
           type="text"
