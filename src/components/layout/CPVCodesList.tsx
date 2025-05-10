@@ -1,77 +1,57 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
 const CPVCodesList = () => {
-  const [codes, setCodes] = useState([]);
+  const [allCodes, setAllCodes] = useState([]);
+  const [displayedCodes, setDisplayedCodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    let mounted = true;
-
     const fetchCPVCodes = async () => {
       console.log('Fetching CPV codes...');
-      if (!mounted) return;
       setLoading(true);
-      
+
       try {
         const { data, error } = await supabase
           .from('t_cpv_codes')
           .select('CODE, EN')
-          .limit(10)
           .order('CODE');
 
         if (error) {
           console.error('Supabase error:', error);
           throw error;
         }
-        
+
         console.log('Fetched data:', data);
-        setCodes(data || []);
+        setAllCodes(data || []);
+        setDisplayedCodes(data || []);
       } catch (err) {
         console.error('Error fetching CPV codes:', err);
-        setCodes([]); // Set empty array on error
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Initial fetch
-    fetchCPVCodes();
-
-    // Cleanup function
-    return () => {
-      mounted = false;
-    };
-
-    const searchCPVCodes = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('t_cpv_codes')
-          .select('CODE, EN')
-          .ilike('EN', `%${searchTerm}%`)
-          .limit(10)
-          .order('CODE');
-
-        if (error) throw error;
-        setCodes(data || []);
-      } catch (err) {
-        console.error('Error searching CPV codes:', err);
+        setAllCodes([]);
+        setDisplayedCodes([]);
       } finally {
         setLoading(false);
       }
     };
 
-    if (searchTerm) {
-      searchCPVCodes();
-    } else {
-      fetchCPVCodes();
+    // Initial fetch
+    fetchCPVCodes();
+  }, []);
+
+  // Handle search using cached data
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setDisplayedCodes(allCodes);
+      return;
     }
-  }, [searchTerm]);
+
+    const searchResults = allCodes.filter(code => 
+      code.EN.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      code.CODE.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setDisplayedCodes(searchResults);
+  }, [searchTerm, allCodes]);
 
   return (
     <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
@@ -82,7 +62,7 @@ const CPVCodesList = () => {
             Search through our database of Common Procurement Vocabulary codes
           </p>
         </div>
-        
+
         <div className="max-w-3xl mx-auto">
           <div className="mb-8 relative">
             <input
@@ -109,7 +89,7 @@ const CPVCodesList = () => {
           ) : (
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
               <div className="divide-y divide-gray-200">
-                {codes.map((code) => (
+                {displayedCodes.map((code) => (
                   <div key={code.CODE} className="p-6 hover:bg-gray-50 transition-colors duration-150">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-100 text-blue-800 text-sm font-medium">
