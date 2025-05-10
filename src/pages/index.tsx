@@ -3,6 +3,7 @@ import Header from '../components/layout/Header';
 import Hero from '../components/layout/Hero';
 import Benefits from '../components/layout/Benefits';
 import CustomerLogos from '../components/layout/CustomerLogos';
+import CPVCodesList from '../components/layout/CPVCodesList';
 import FAQ from '../components/layout/FAQ';
 import Footer from '../components/layout/Footer';
 import Modal from '../components/ui/Modal';
@@ -31,6 +32,7 @@ const LandingPage = () => {
         <Hero onOpenModal={handleOpenTrialForm} />
         <Benefits />
         <CustomerLogos />
+        <CPVCodesList />
         <FAQ />
       </main>
       
