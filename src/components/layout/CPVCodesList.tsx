@@ -14,8 +14,8 @@ const CPVCodesList = () => {
         const { data, error } = await supabase
           .from('t_cpv_codes')
           .select('CODE, EN')
-          .ilike('EN', `%${searchTerm}%`)
-          .limit(10);
+          .limit(10)
+          .order('CODE');
 
         if (error) throw error;
         setCodes(data || []);
@@ -26,7 +26,30 @@ const CPVCodesList = () => {
       }
     };
 
-    fetchCPVCodes();
+    const searchCPVCodes = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('t_cpv_codes')
+          .select('CODE, EN')
+          .ilike('EN', `%${searchTerm}%`)
+          .limit(10)
+          .order('CODE');
+
+        if (error) throw error;
+        setCodes(data || []);
+      } catch (err) {
+        console.error('Error searching CPV codes:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (searchTerm) {
+      searchCPVCodes();
+    } else {
+      fetchCPVCodes();
+    }
   }, [searchTerm]);
 
   return (
