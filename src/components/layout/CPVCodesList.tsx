@@ -90,7 +90,10 @@ const CPVCodesList = () => {
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
               {displayedCodes.length > 0 && (
                 <p className="text-sm text-gray-600 mb-4 px-6 pt-4">
-                  {displayedCodes.length} records found, showing the first 10 records
+                  {displayedCodes.length >= 10 
+                    ? `${displayedCodes.length} records found, showing the first 10 records`
+                    : `${displayedCodes.length} records found`
+                  }
                 </p>
               )}
               <div className="divide-y divide-gray-200">
