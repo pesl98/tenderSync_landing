@@ -137,11 +137,37 @@ const CPVCodesPage = () => {
           <h2 className="text-xl font-semibold mb-4">Your Selected CPV Codes</h2>
           <div className="bg-gray-50 p-4 rounded-lg">
             {userCodes.map((code) => (
-              <div key={code.cpv_code} className="mb-2 last:mb-0">
-                <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">
-                  {code.cpv_code}
-                </span>
-                <span className="text-gray-700">{code.t_cpv_codes.EN}</span>
+              <div key={code.cpv_code} className="mb-2 last:mb-0 flex items-center justify-between">
+                <div>
+                  <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">
+                    {code.cpv_code}
+                  </span>
+                  <span className="text-gray-700">{code.t_cpv_codes.EN}</span>
+                </div>
+                <button
+                  onClick={async () => {
+                    try {
+                      const { error } = await supabase
+                        .from('t_user_profile_cpv_codes')
+                        .delete()
+                        .eq('user_profile_id', userProfileId)
+                        .eq('cpv_code', code.cpv_code);
+                      
+                      if (error) throw error;
+                      
+                      // Update the local state
+                      setUserCodes(prevCodes => 
+                        prevCodes.filter(c => c.cpv_code !== code.cpv_code)
+                      );
+                    } catch (err) {
+                      console.error('Error deleting CPV code:', err);
+                      alert('Failed to delete CPV code');
+                    }
+                  }}
+                  className="text-red-600 hover:text-red-800 px-2 py-1"
+                >
+                  Delete
+                </button>
               </div>
             ))}
           </div>
