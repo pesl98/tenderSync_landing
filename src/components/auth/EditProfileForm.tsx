@@ -53,7 +53,7 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
       // Fetch user's existing CPV codes
       const { data: userCpvCodes, error: userCpvError } = await supabase
         .from('t_user_profile_cpv_codes')
-        .select('cpv_code')
+        .select('code')
         .eq('email', initialData.email);
 
       if (userCpvError) {
@@ -105,7 +105,7 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
       if (cpvCodes.length > 0) {
         const cpvInserts = cpvCodes.map(code => ({
           email: initialData.email,
-          code,
+          code: code,
         }));
 
         const { error: cpvError } = await supabase
