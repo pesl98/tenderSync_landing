@@ -9,6 +9,7 @@ const CPVCodesList = () => {
 
   useEffect(() => {
     const fetchCPVCodes = async () => {
+      console.log('Fetching CPV codes...');
       setLoading(true);
       try {
         const { data, error } = await supabase
@@ -17,7 +18,12 @@ const CPVCodesList = () => {
           .limit(10)
           .order('CODE');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+        
+        console.log('Fetched data:', data);
         setCodes(data || []);
       } catch (err) {
         console.error('Error fetching CPV codes:', err);
@@ -25,6 +31,9 @@ const CPVCodesList = () => {
         setLoading(false);
       }
     };
+
+    // Call fetchCPVCodes immediately when component mounts
+    fetchCPVCodes();
 
     const searchCPVCodes = async () => {
       setLoading(true);
