@@ -1,9 +1,11 @@
 
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 
 const CPVCodesPage = () => {
+  const navigate = useNavigate();
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
