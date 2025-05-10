@@ -133,13 +133,7 @@ const CPVCodesPage = () => {
           </div>
         </div>
       )}
-        <Button 
-          variant="outline" 
-          onClick={() => navigate('/dashboard')}
-        >
-          Return to Dashboard
-        </Button>
-      </div>
+
       <div className="mb-4">
         <input
           type="text"
