@@ -89,6 +89,20 @@ const CPVCodesPage = () => {
         ]);
 
       if (error) throw error;
+      
+      // Fetch updated user CPV codes
+      const { data: userCpvData } = await supabase
+        .from('t_user_profile_cpv_codes')
+        .select(`
+          cpv_code,
+          t_cpv_codes!inner(CODE, EN)
+        `)
+        .eq('user_profile_id', profileData.id);
+        
+      if (userCpvData) {
+        setUserCodes(userCpvData);
+      }
+      
       alert('CPV code added successfully');
     } catch (err) {
       console.error('Error adding CPV code:', err);
