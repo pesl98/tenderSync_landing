@@ -207,7 +207,7 @@ const TrialForm: React.FC<TrialFormProps> = ({ onSuccess }) => {
       <FormField
         id="companyName"
         label="Company Name"
-        placeholder="Your Company Ltd."
+        placeholder="Your Company"
         required
         value={formData.companyName}
         onChange={handleChange}
