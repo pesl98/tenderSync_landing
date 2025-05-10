@@ -88,8 +88,13 @@ const CPVCodesList = () => {
             </div>
           ) : (
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              {displayedCodes.length > 0 && (
+                <p className="text-sm text-gray-600 mb-4 px-6 pt-4">
+                  {displayedCodes.length} records found, showing the first 10 records
+                </p>
+              )}
               <div className="divide-y divide-gray-200">
-                {displayedCodes.map((code) => (
+                {displayedCodes.slice(0, 10).map((code) => (
                   <div key={code.CODE} className="p-6 hover:bg-gray-50 transition-colors duration-150">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-100 text-blue-800 text-sm font-medium">
