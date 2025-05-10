@@ -30,40 +30,55 @@ const CPVCodesList = () => {
   }, [searchTerm]);
 
   return (
-    <section className="py-12 bg-gray-50">
+    <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-center mb-8">Available CPV Codes</h2>
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search by description..."
-            className="w-full px-4 py-2 border rounded-md"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Browse CPV Codes</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Search through our database of Common Procurement Vocabulary codes
+          </p>
         </div>
-        {loading ? (
-          <p className="text-center">Loading...</p>
-        ) : (
-          <div className="bg-white shadow overflow-hidden rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {codes.map((code) => (
-                  <tr key={code.CODE}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{code.CODE}</td>
-                    <td className="px-6 py-4 text-sm text-gray-500">{code.EN}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-8 relative">
+            <input
+              type="text"
+              placeholder="Search by description..."
+              className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl shadow-sm 
+                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200
+                placeholder-gray-400"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" strokeLinecap="round" 
+                strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
           </div>
-        )}
+
+          {loading ? (
+            <div className="flex justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="divide-y divide-gray-200">
+                {codes.map((code) => (
+                  <div key={code.CODE} className="p-6 hover:bg-gray-50 transition-colors duration-150">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                      <span className="inline-flex items-center px-3 py-1 rounded-lg bg-blue-100 text-blue-800 text-sm font-medium">
+                        {code.CODE}
+                      </span>
+                      <p className="text-gray-700 font-medium">{code.EN}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );
