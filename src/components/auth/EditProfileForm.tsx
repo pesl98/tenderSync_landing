@@ -39,18 +39,21 @@ const EditProfileForm = ({ initialData, onClose, onSuccess }: EditProfileFormPro
       // Fetch available CPV codes
       const { data: cpvCodesData, error: cpvError } = await supabase
         .from('t_cpv_codes')
-        .select('code, description');
+        .select('CODE, EN');
 
       if (cpvError) {
         console.error('Error fetching CPV codes:', cpvError);
       } else {
-        setAvailableCpvCodes(cpvCodesData || []);
+        setAvailableCpvCodes(cpvCodesData?.map(code => ({
+          code: code.CODE,
+          description: code.EN
+        })) || []);
       }
 
       // Fetch user's existing CPV codes
       const { data: userCpvCodes, error: userCpvError } = await supabase
         .from('t_user_profile_cpv_codes')
-        .select('code')
+        .select('cpv_code')
         .eq('email', initialData.email);
 
       if (userCpvError) {
