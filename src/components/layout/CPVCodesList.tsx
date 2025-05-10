@@ -11,7 +11,14 @@ const CPVCodesList = () => {
     const fetchCPVCodes = async () => {
       console.log('Fetching CPV codes...');
       setLoading(true);
+      
+      // Wait a bit to ensure Supabase is initialized
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       try {
+        if (!supabase) {
+          throw new Error('Supabase client not initialized');
+        }
         const { data, error } = await supabase
           .from('t_cpv_codes')
           .select('CODE, EN')
@@ -27,6 +34,7 @@ const CPVCodesList = () => {
         setCodes(data || []);
       } catch (err) {
         console.error('Error fetching CPV codes:', err);
+        setCodes([]); // Set empty array on error
       } finally {
         setLoading(false);
       }
