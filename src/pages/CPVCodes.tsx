@@ -7,18 +7,42 @@ import Button from '../components/ui/Button';
 const CPVCodesPage = () => {
   const navigate = useNavigate();
   const [codes, setCodes] = useState([]);
+  const [userCodes, setUserCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userProfileId, setUserProfileId] = useState('');
 
   useEffect(() => {
-    const getUserEmail = async () => {
+    const getUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUserEmail(user.email);
+        // Get user profile ID
+        const { data: profileData } = await supabase
+          .from('t_user_profiles')
+          .select('id')
+          .eq('email', user.email)
+          .single();
+          
+        if (profileData) {
+          setUserProfileId(profileData.id);
+          // Fetch user's CPV codes
+          const { data: userCpvData } = await supabase
+            .from('t_user_profile_cpv_codes')
+            .select(`
+              cpv_code,
+              t_cpv_codes!inner(CODE, EN)
+            `)
+            .eq('user_profile_id', profileData.id);
+            
+          if (userCpvData) {
+            setUserCodes(userCpvData);
+          }
+        }
       }
     };
-    getUserEmail();
+    getUserData();
   }, []);
 
   const searchCPVCodes = async (term: string) => {
@@ -86,6 +110,29 @@ const CPVCodesPage = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">CPV Codes</h1>
+        <Button 
+          variant="outline" 
+          onClick={() => navigate('/dashboard')}
+        >
+          Return to Dashboard
+        </Button>
+      </div>
+
+      {userCodes.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Your Selected CPV Codes</h2>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            {userCodes.map((code) => (
+              <div key={code.cpv_code} className="mb-2 last:mb-0">
+                <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">
+                  {code.cpv_code}
+                </span>
+                <span className="text-gray-700">{code.t_cpv_codes.EN}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
         <Button 
           variant="outline" 
           onClick={() => navigate('/dashboard')}
