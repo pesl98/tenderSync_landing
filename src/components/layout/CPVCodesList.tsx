@@ -8,17 +8,14 @@ const CPVCodesList = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchCPVCodes = async () => {
       console.log('Fetching CPV codes...');
+      if (!mounted) return;
       setLoading(true);
       
-      // Wait a bit to ensure Supabase is initialized
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
       try {
-        if (!supabase) {
-          throw new Error('Supabase client not initialized');
-        }
         const { data, error } = await supabase
           .from('t_cpv_codes')
           .select('CODE, EN')
@@ -36,12 +33,19 @@ const CPVCodesList = () => {
         console.error('Error fetching CPV codes:', err);
         setCodes([]); // Set empty array on error
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
-    // Call fetchCPVCodes immediately when component mounts
+    // Initial fetch
     fetchCPVCodes();
+
+    // Cleanup function
+    return () => {
+      mounted = false;
+    };
 
     const searchCPVCodes = async () => {
       setLoading(true);
