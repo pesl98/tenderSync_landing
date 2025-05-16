@@ -177,8 +177,10 @@ const Dashboard = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {summary.notice_id}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {summary.summary}
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          <div className="line-clamp-3 max-h-[4.5em]">
+                            {summary.summary}
+                          </div>
                         </td>
                       </tr>
                     ))}
