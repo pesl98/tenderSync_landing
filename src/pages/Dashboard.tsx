@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -21,6 +20,7 @@ const Dashboard = () => {
   const [profile, setProfile] = useState(null);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [noticeSummaries, setNoticeSummaries] = useState([]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -44,6 +44,36 @@ const Dashboard = () => {
         setError('Failed to load user profile');
       } else {
         setProfile(userProfile);
+
+        // Fetch notice summaries for the user
+        const fetchNoticeSummaries = async () => {
+          try {
+            // First get user's notice IDs
+            const { data: userNotices, error: userNoticesError } = await supabase
+              .from('user_notice_summaries')
+              .select('notice_id')
+              .eq('user_profile_id', userProfile.id);
+
+            if (userNoticesError) throw userNoticesError;
+
+            if (userNotices && userNotices.length > 0) {
+              // Get full notice summaries
+              const noticeIds = userNotices.map(notice => notice.notice_id);
+              const { data: summaries, error: summariesError } = await supabase
+                .from('notice_summaries')
+                .select('created_at, notice_id, summary')
+                .in('notice_id', noticeIds)
+                .order('created_at', { ascending: false });
+
+              if (summariesError) throw summariesError;
+              setNoticeSummaries(summaries || []);
+            }
+          } catch (err) {
+            console.error('Error fetching notice summaries:', err);
+          }
+        };
+
+        fetchNoticeSummaries();
       }
     };
 
@@ -131,24 +161,24 @@ const Dashboard = () => {
                         Date
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Summary
+                        Notice ID
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Score
+                        Summary
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {mockTransactions.map((transaction, index) => (
+                    {noticeSummaries.map((summary, index) => (
                       <tr key={index}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {transaction.date}
+                          {new Date(summary.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {transaction.summary}
+                          {summary.notice_id}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {transaction.score}%
+                          {summary.summary}
                         </td>
                       </tr>
                     ))}
