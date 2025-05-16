@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -5,15 +6,6 @@ import Button from '../components/ui/Button';
 import EditProfileForm from '../components/auth/EditProfileForm';
 import CPVCodesList from '../components/profile/CPVCodesList';
 import NoticeDetailsModal from '../components/NoticeDetailsModal';
-
-// Mock data for the dashboard
-const mockTransactions = [
-  { date: '2024-02-15', summary: 'Tender Analysis Report', score: 85 },
-  { date: '2024-02-14', summary: 'Bid Evaluation Complete', score: 92 },
-  { date: '2024-02-13', summary: 'Contract Review', score: 78 },
-  { date: '2024-02-12', summary: 'Proposal Assessment', score: 88 },
-  { date: '2024-02-11', summary: 'Documentation Check', score: 95 },
-];
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -196,23 +188,6 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* ... rest of the profile section ... */}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <NoticeDetailsModal
-        isOpen={!!selectedNoticeId}
-        onClose={() => setSelectedNoticeId(null)}
-        noticeId={selectedNoticeId}
-      />
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">Profile Information</h2>
                 <Button onClick={() => setActiveTab('edit')} variant="outline" size="sm">
@@ -291,6 +266,12 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      <NoticeDetailsModal
+        isOpen={!!selectedNoticeId}
+        onClose={() => setSelectedNoticeId(null)}
+        noticeId={selectedNoticeId}
+      />
     </div>
   );
 };
