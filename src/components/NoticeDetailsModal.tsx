@@ -9,18 +9,17 @@ type NoticeDetailsModalProps = {
   noticeId: string | null;
 };
 
-type TEDManifest = {
+type NoticeDetails = {
+  created_at: string;
   notice_id: string;
-  doc_no: string;
-  title: string;
-  published_date: string;
-  description: string;
-  short_description: string;
-  [key: string]: any;
+  summary: string;
+  storage_path: string;
+  pdf_path: string;
+  cpv_prefix: string;
 };
 
 const NoticeDetailsModal = ({ isOpen, onClose, noticeId }: NoticeDetailsModalProps) => {
-  const [noticeDetails, setNoticeDetails] = useState<TEDManifest | null>(null);
+  const [noticeDetails, setNoticeDetails] = useState<NoticeDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,14 +28,29 @@ const NoticeDetailsModal = ({ isOpen, onClose, noticeId }: NoticeDetailsModalPro
       
       setLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('ted_manifest')
-          .select('*')
+        // Fetch from notice_summaries
+        const { data: summaryData, error: summaryError } = await supabase
+          .from('notice_summaries')
+          .select('created_at, notice_id, summary')
           .eq('notice_id', noticeId)
           .single();
 
-        if (error) throw error;
-        setNoticeDetails(data);
+        if (summaryError) throw summaryError;
+
+        // Fetch from ted_manifest
+        const { data: manifestData, error: manifestError } = await supabase
+          .from('ted_manifest')
+          .select('storage_path, pdf_path, cpv_prefix')
+          .eq('notice_id', noticeId)
+          .single();
+
+        if (manifestError) throw manifestError;
+
+        // Combine the data
+        setNoticeDetails({
+          ...summaryData,
+          ...manifestData,
+        });
       } catch (error) {
         console.error('Error fetching notice details:', error);
       } finally {
@@ -55,24 +69,28 @@ const NoticeDetailsModal = ({ isOpen, onClose, noticeId }: NoticeDetailsModalPro
         ) : noticeDetails ? (
           <div className="space-y-4">
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Document Number</h3>
-              <p className="mt-1">{noticeDetails.doc_no}</p>
+              <h3 className="text-sm font-medium text-gray-500">Creation Date</h3>
+              <p className="mt-1">{new Date(noticeDetails.created_at).toLocaleDateString()}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Title</h3>
-              <p className="mt-1">{noticeDetails.title}</p>
+              <h3 className="text-sm font-medium text-gray-500">Notice ID</h3>
+              <p className="mt-1">{noticeDetails.notice_id}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Published Date</h3>
-              <p className="mt-1">{new Date(noticeDetails.published_date).toLocaleDateString()}</p>
+              <h3 className="text-sm font-medium text-gray-500">Summary</h3>
+              <p className="mt-1 whitespace-pre-wrap">{noticeDetails.summary}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Description</h3>
-              <p className="mt-1 whitespace-pre-wrap">{noticeDetails.description}</p>
+              <h3 className="text-sm font-medium text-gray-500">Storage Path</h3>
+              <p className="mt-1">{noticeDetails.storage_path}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-gray-500">Short Description</h3>
-              <p className="mt-1">{noticeDetails.short_description}</p>
+              <h3 className="text-sm font-medium text-gray-500">PDF Path</h3>
+              <p className="mt-1">{noticeDetails.pdf_path}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">CPV Prefix</h3>
+              <p className="mt-1">{noticeDetails.cpv_prefix}</p>
             </div>
           </div>
         ) : (
