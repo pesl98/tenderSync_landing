@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import Button from '../components/ui/Button';
 import EditProfileForm from '../components/auth/EditProfileForm';
 import CPVCodesList from '../components/profile/CPVCodesList';
+import NoticeDetailsModal from '../components/NoticeDetailsModal';
 
 // Mock data for the dashboard
 const mockTransactions = [
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [noticeSummaries, setNoticeSummaries] = useState([]);
+  const [selectedNoticeId, setSelectedNoticeId] = useState<string | null>(null);
 
   useEffect(() => {
     const getUser = async () => {
@@ -170,7 +172,11 @@ const Dashboard = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {noticeSummaries.map((summary, index) => (
-                      <tr key={index}>
+                      <tr 
+                        key={index}
+                        onClick={() => setSelectedNoticeId(summary.notice_id)}
+                        className="cursor-pointer hover:bg-gray-50"
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {new Date(summary.created_at).toLocaleDateString()}
                         </td>
@@ -184,6 +190,23 @@ const Dashboard = () => {
                         </td>
                       </tr>
                     ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* ... rest of the profile section ... */}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <NoticeDetailsModal
+        isOpen={!!selectedNoticeId}
+        onClose={() => setSelectedNoticeId(null)}
+        noticeId={selectedNoticeId}
+      />
                   </tbody>
                 </table>
               </div>
