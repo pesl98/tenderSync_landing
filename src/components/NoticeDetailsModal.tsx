@@ -74,7 +74,16 @@ const NoticeDetailsModal = ({ isOpen, onClose, noticeId }: NoticeDetailsModalPro
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">Notice ID</h3>
-              <p className="mt-1">{noticeDetails.notice_id}</p>
+              <p className="mt-1">
+                <a 
+                  href={`https://ted.europa.eu/en/notice/-/detail/${noticeDetails.notice_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  {noticeDetails.notice_id}
+                </a>
+              </p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">Summary</h3>
