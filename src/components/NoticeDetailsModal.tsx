@@ -95,7 +95,16 @@ const NoticeDetailsModal = ({ isOpen, onClose, noticeId }: NoticeDetailsModalPro
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">PDF Path</h3>
-              <p className="mt-1">{noticeDetails.pdf_path}</p>
+              <p className="mt-1">
+                <a 
+                  href={`https://znawqzkjypfbuqiszalh.supabase.co/storage/v1/object/public/ted-pdf${noticeDetails.pdf_path}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  {noticeDetails.pdf_path}
+                </a>
+              </p>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-500">CPV Prefix</h3>
