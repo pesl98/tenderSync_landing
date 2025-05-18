@@ -6,6 +6,7 @@ import Button from './ui/Button';
 type FormData = {
   name: string;
   email: string;
+  phone: string;
   message: string;
 };
 
@@ -17,12 +18,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ onClose }) => {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
+    phone: '',
     message: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission here
     console.log('Form submitted:', formData);
     onClose();
   };
@@ -34,7 +35,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ onClose }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-2xl font-bold mb-6">Contact Us</h2>
+      <div className="text-center mb-6">
+        <h2 className="text-3xl font-bold text-gray-900">Contact TenderSync</h2>
+        <p className="text-gray-600 mt-2">We'd love to hear from you</p>
+      </div>
       
       <FormField
         id="name"
@@ -52,6 +56,15 @@ const ContactForm: React.FC<ContactFormProps> = ({ onClose }) => {
         placeholder="john@example.com"
         required
         value={formData.email}
+        onChange={handleChange}
+      />
+
+      <FormField
+        id="phone"
+        label="Phone Number (optional)"
+        type="tel"
+        placeholder="+31 6 12345678"
+        value={formData.phone}
         onChange={handleChange}
       />
       
