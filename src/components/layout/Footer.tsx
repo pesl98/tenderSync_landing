@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Modal from '../ui/Modal';
+import ContactForm from '../ContactForm';
 
 const Footer = () => {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
       <div className="container mx-auto px-4 md:px-6">
@@ -17,7 +20,23 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li>
+                <button 
+                  onClick={() => setIsContactModalOpen(true)} 
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  Contact
+                </button>
+              </li>
+              
+              <Modal
+                isOpen={isContactModalOpen}
+                onClose={() => setIsContactModalOpen(false)}
+                title="Contact Us"
+                size="md"
+              >
+                <ContactForm onClose={() => setIsContactModalOpen(false)} />
+              </Modal>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
             </ul>
           </div>
