@@ -5,6 +5,7 @@ import LoginPage from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SetPassword from './pages/SetPassword';
 import CPVCodesPage from './pages/CPVCodes';
+import TermsOfService from './pages/TermsOfService';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/set-password" element={<SetPassword />} />
         <Route path="/cpv" element={<CPVCodesPage />} />
+        <Route path="/terms-of-service" element={<TermsOfService />} />
       </Routes>
     </Router>
   );
