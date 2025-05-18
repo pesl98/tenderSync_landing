@@ -1,6 +1,10 @@
 import React from 'react';
 
-const Footer = () => {
+interface FooterProps {
+  onOpenContactForm: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onOpenContactForm }) => {
   return (
     <footer className="bg-gray-900 text-white pt-12 pb-8">
       <div className="container mx-auto px-4 md:px-6">
@@ -16,7 +20,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+              <li><button onClick={onOpenContactForm} className="text-gray-400 hover:text-white transition-colors focus:outline-none">Contact</button></li>
               <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a></li>
             </ul>
           </div>

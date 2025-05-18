@@ -9,6 +9,7 @@ import Footer from '../components/layout/Footer';
 import Modal from '../components/ui/Modal';
 import TrialForm from '../components/TrialForm';
 import ThankYouMessage from '../components/ThankYouMessage';
+import ContactForm from '../components/ContactForm';
 import useModal from '../hooks/useModal';
 
 const LandingPage = () => {
@@ -36,11 +37,11 @@ const LandingPage = () => {
         <FAQ />
       </main>
       
-      <Footer />
+      <Footer onOpenContactForm={() => openModal('contact-form')} />
       
       {/* Trial Form Modal */}
       <Modal
-        isOpen={modalState.isOpen && modalState.type === 'trial-form'}
+        isOpen={modalState.isOpen && modalState.type === 'trial-form'} // Keep existing modal for trial form
         onClose={closeModal}
         title={formSubmitted ? "Request Received" : "Start Your Free Trial"}
         size="lg"
@@ -50,6 +51,15 @@ const LandingPage = () => {
         ) : (
           <TrialForm onSuccess={handleFormSuccess} />
         )}
+      </Modal>
+
+      {/* Contact Form Modal */}
+      <Modal
+        isOpen={modalState.isOpen && modalState.type === 'contact-form'} // Add new modal for contact form
+        onClose={closeModal}
+        title="Contact Us"
+      >
+        <ContactForm />
       </Modal>
     </div>
   );
