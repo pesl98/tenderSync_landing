@@ -23,6 +23,7 @@ const Hero = ({ onOpenModal }: { onOpenModal: () => void }) => {
           </div>
           <div className="flex flex-col items-center space-y-4">
             <div className="text-gray-700 font-medium">
+              <span>Call us: </span>
               <a href="tel:+31623374143" className="hover:text-blue-800 transition-colors">
                 +31 6 233 74 143
               </a>
