@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import FormField from './ui/Form';
 import Button from './ui/Button';
+import { supabase } from '../lib/supabase';
+import { useNavigate } from 'react-router-dom';
 
 type FormData = {
   name: string;
@@ -22,10 +24,38 @@ const ContactForm: React.FC<ContactFormProps> = ({ onClose }) => {
     message: ''
   });
 
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    onClose();
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      const { error: insertError } = await supabase
+        .from('contact_requests')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message
+        }]);
+
+      if (insertError) throw insertError;
+
+      onClose();
+      alert('Thanks for contacting TenderSync, we will contact you asap');
+      setTimeout(() => {
+        navigate('/');
+      }, 5000);
+    } catch (err) {
+      setError('Failed to submit form. Please try again.');
+      console.error('Error:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -78,13 +108,19 @@ const ContactForm: React.FC<ContactFormProps> = ({ onClose }) => {
         onChange={handleChange}
       />
       
+      {error && (
+        <div className="text-red-500 text-sm mt-2">
+          {error}
+        </div>
+      )}
       <div className="mt-6">
         <Button 
           type="submit" 
           variant="primary" 
           fullWidth
+          disabled={isSubmitting}
         >
-          Send Message
+          {isSubmitting ? 'Sending...' : 'Send Message'}
         </Button>
       </div>
     </form>
