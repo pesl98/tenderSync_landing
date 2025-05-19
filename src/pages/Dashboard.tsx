@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [noticeSummaries, setNoticeSummaries] = useState([]);
+  const [trialSubscription, setTrialSubscription] = useState(null);
   const [selectedNoticeId, setSelectedNoticeId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,6 +38,22 @@ const Dashboard = () => {
         setError('Failed to load user profile');
       } else {
         setProfile(userProfile);
+        
+        // Fetch trial subscription
+        const { data: trialData, error: trialError } = await supabase
+          .from('t_trial_subscriptions')
+          .select('*')
+          .eq('email', user.email)
+          .single();
+
+        if (trialError) {
+          console.error('Error fetching trial subscription:', trialError);
+        } else if (trialData) {
+          setTrialSubscription(trialData);
+          if (trialData.end_date && new Date(trialData.end_date) <= new Date()) {
+            setError(`Your trial has expired on ${new Date(trialData.end_date).toLocaleDateString()}. Please contact the sales team.`);
+          }
+        }
 
         // Fetch notice summaries for the user
         const fetchNoticeSummaries = async () => {
@@ -114,6 +131,13 @@ const Dashboard = () => {
           {profile?.company_name && `${profile.company_name} • `}
           Last login: {new Date().toLocaleDateString()}
         </p>
+        {trialSubscription && (
+          <p className="text-gray-600 mt-1">
+            Trial period: {trialSubscription.start_date ? new Date(trialSubscription.start_date).toLocaleDateString() : 'Not started'} 
+            {' - '} 
+            {trialSubscription.end_date ? new Date(trialSubscription.end_date).toLocaleDateString() : 'Not set'}
+          </p>
+        )}
         {error && (
           <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
             {error}
