@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -107,15 +106,20 @@ const Dashboard = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {profile?.name || user.email}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {profile?.company_name && `${profile.company_name} • `}
-            Last login: {new Date().toLocaleDateString()}
-          </p>
-        </div>
+      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
+          Welcome back, {profile?.name || user.email}
+        </h1>
+        <p className="text-gray-600 mt-2">
+          {profile?.company_name && `${profile.company_name} • `}
+          Last login: {new Date().toLocaleDateString()}
+        </p>
+        {error && (
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-700">
+            {error}
+          </div>
+        )}
+      </div>
 
         {/* Dashboard Tabs */}
         <div className="bg-white rounded-lg shadow-sm p-6">
