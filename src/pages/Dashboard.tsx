@@ -149,16 +149,18 @@ const Dashboard = () => {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="border-b border-gray-200 mb-6">
             <nav className="-mb-px flex space-x-8">
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`${
-                  activeTab === 'overview'
-                    ? 'border-blue-800 text-blue-800'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap pb-4 px-1 border-b-2 font-medium`}
-              >
-                Overview
-              </button>
+              {(!trialSubscription?.end_date || new Date(trialSubscription.end_date) > new Date()) && (
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className={`${
+                    activeTab === 'overview'
+                      ? 'border-blue-800 text-blue-800'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  } whitespace-nowrap pb-4 px-1 border-b-2 font-medium`}
+                >
+                  Overview
+                </button>
+              )}
               <button
                 onClick={() => setActiveTab('profile')}
                 className={`${
@@ -172,7 +174,7 @@ const Dashboard = () => {
             </nav>
           </div>
 
-          {activeTab === 'overview' ? (
+          {activeTab === 'overview' && (!trialSubscription?.end_date || new Date(trialSubscription.end_date) > new Date()) ? (
             <div>
               <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
               <div className="overflow-x-auto">
